@@ -6,6 +6,7 @@ import {
     getTenantByIdService,
     getAllTenantsService,
     assignUserToTenantService,
+    updateTenantService,
 } from "../services/tenantService";
 
 export async function createTenantController(
@@ -193,6 +194,107 @@ export async function assignUserToTenantController(
                 res.status(knownError.status).json({
                     success: false,
                     message: knownError.message,
+                });
+                return;
+            }
+        }
+
+        next(error);
+    }
+}
+
+export async function updateTenantController(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const tenantId = req.params.tenantId;
+
+        if (typeof tenantId !== "string") {
+            res.status(400).json({
+                success: false,
+                message: "Invalid tenant ID.",
+            });
+            return;
+        }
+
+        const { name, code, status, settings } = req.body;
+
+        const tenant = await updateTenantService(tenantId, {
+            name,
+            code,
+            status,
+            settings,
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Organisation updated successfully.",
+            data: tenant,
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            const errors: Record<
+                string,
+                { status: number; message: string }
+            > = {
+                INVALID_TENANT_ID: {
+                    status: 400,
+                    message: "Invalid organisation ID.",
+                },
+                TENANT_NOT_FOUND: {
+                    status: 404,
+                    message: "Organisation not found.",
+                },
+                INVALID_TENANT_NAME: {
+                    status: 400,
+                    message: "Organisation name cannot be empty.",
+                },
+                INVALID_TENANT_CODE: {
+                    status: 400,
+                    message: "Organisation code cannot be empty.",
+                },
+                TENANT_CODE_ALREADY_EXISTS: {
+                    status: 409,
+                    message: "An organisation with this code already exists.",
+                },
+                INVALID_TENANT_STATUS: {
+                    status: 400,
+                    message: "Invalid organisation status.",
+                },
+                INVALID_TENANT_SETTINGS: {
+                    status: 400,
+                    message: "Invalid organisation settings.",
+                },
+                NO_TENANT_UPDATES_PROVIDED: {
+                    status: 400,
+                    message: "Provide at least one field to update.",
+                },
+                TENANT_UPDATE_FAILED: {
+                    status: 500,
+                    message: "Unable to update organisation.",
+                },
+            };
+
+            const knownError = errors[error.message];
+
+            if (knownError) {
+                res.status(knownError.status).json({
+                    success: false,
+                    message: knownError.message,
+                });
+                return;
+            }
+
+            if (
+                typeof error === "object" &&
+                "code" in error &&
+                error.code === 11000
+            ) {
+                res.status(409).json({
+                    success: false,
+                    message: "An organisation with this code already exists.",
                 });
                 return;
             }

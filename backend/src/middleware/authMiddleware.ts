@@ -4,18 +4,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { User } from "../models/User";
 
-interface AuthenticatedUser {
-    userId: string;
-    role: string;
-}
 
-declare global {
-    namespace Express {
-        interface Request {
-            auth?: AuthenticatedUser;
-        }
-    }
-}
 
 export async function authenticateToken(
     req: Request,

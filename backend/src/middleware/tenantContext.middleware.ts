@@ -5,13 +5,7 @@ import mongoose from "mongoose";
 import { User } from "../models/User";
 import { Tenant } from "../models/Tenant";
 
-declare global {
-    namespace Express {
-        interface Request {
-            tenantId?: string;
-        }
-    }
-}
+
 
 export async function tenantContext(
     req: Request,

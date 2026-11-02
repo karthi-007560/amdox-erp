@@ -1,5 +1,11 @@
+
 import mongoose from "mongoose";
-import type { EmployeeStatus } from "../../models/hr/Employee.js";
+
+import type {
+    EmployeeStatus,
+    IEmployeeCompensation,
+} from "../../models/hr/Employee.js";
+
 import Employee from "../../models/hr/Employee.js";
 import { User } from "../../models/User.js";
 
@@ -18,6 +24,7 @@ interface CreateEmployeeInput {
     phone?: string;
     dateOfJoining?: Date;
     status?: EmployeeStatus;
+    compensation?: IEmployeeCompensation;
 }
 
 interface UpdateEmployeeInput {
@@ -27,15 +34,21 @@ interface UpdateEmployeeInput {
     phone?: string;
     dateOfJoining?: Date;
     status?: EmployeeStatus;
+    compensation?: IEmployeeCompensation;
 }
 
-function validateObjectId(id: string, fieldName: string): void {
+function validateObjectId(
+    id: string,
+    fieldName: string
+): void {
     if (!mongoose.isValidObjectId(id)) {
         throw new Error(`INVALID_${fieldName.toUpperCase()}`);
     }
 }
 
-export async function createEmployeeService(input: CreateEmployeeInput) {
+export async function createEmployeeService(
+    input: CreateEmployeeInput
+) {
     validateObjectId(input.userId, "userId");
     validateObjectId(input.tenantId, "tenantId");
 
@@ -43,8 +56,13 @@ export async function createEmployeeService(input: CreateEmployeeInput) {
         throw new Error("EMPLOYEE_ID_REQUIRED");
     }
 
-    const tenantObjectId = new mongoose.Types.ObjectId(input.tenantId);
-    const userObjectId = new mongoose.Types.ObjectId(input.userId);
+    const tenantObjectId = new mongoose.Types.ObjectId(
+        input.tenantId
+    );
+
+    const userObjectId = new mongoose.Types.ObjectId(
+        input.userId
+    );
 
     const user = await User.findById(userObjectId).select(
         "_id tenantId isActive"
@@ -58,11 +76,16 @@ export async function createEmployeeService(input: CreateEmployeeInput) {
         throw new Error("USER_NOT_ACTIVE");
     }
 
-    if (!user.tenantId || !user.tenantId.equals(tenantObjectId)) {
+    if (
+        !user.tenantId ||
+        !user.tenantId.equals(tenantObjectId)
+    ) {
         throw new Error("USER_NOT_ASSIGNED_TO_TENANT");
     }
 
-    const existingEmployee = await getEmployeeByUserId(input.userId);
+    const existingEmployee = await getEmployeeByUserId(
+        input.userId
+    );
 
     if (existingEmployee) {
         throw new Error("EMPLOYEE_ALREADY_EXISTS_FOR_USER");
@@ -77,6 +100,7 @@ export async function createEmployeeService(input: CreateEmployeeInput) {
         phone: input.phone?.trim(),
         dateOfJoining: input.dateOfJoining,
         status: input.status ?? "active",
+        compensation: input.compensation,
     });
 }
 
@@ -101,8 +125,11 @@ export async function getEmployeeService(
     return employee;
 }
 
-export async function getEmployeesByTenantService(tenantId: string) {
+export async function getEmployeesByTenantService(
+    tenantId: string
+) {
     validateObjectId(tenantId, "tenantId");
+
     return getEmployeesByTenant(tenantId);
 }
 
@@ -120,6 +147,7 @@ export async function updateEmployeeService(
         if (!input.employeeId.trim()) {
             throw new Error("EMPLOYEE_ID_REQUIRED");
         }
+
         updateData.employeeId = input.employeeId.trim();
     }
 
@@ -143,10 +171,26 @@ export async function updateEmployeeService(
         updateData.status = input.status;
     }
 
+    if (input.compensation !== undefined) {
+        updateData.compensation = input.compensation;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+        throw new Error("NO_EMPLOYEE_FIELDS_TO_UPDATE");
+    }
+
     const employee = await Employee.findOneAndUpdate(
-        { _id: employeeId, tenantId },
-        { $set: updateData },
-        { new: true, runValidators: true }
+        {
+            _id: employeeId,
+            tenantId,
+        },
+        {
+            $set: updateData,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
     )
         .populate("userId", "name email role")
         .populate("tenantId", "name code");

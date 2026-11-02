@@ -31,6 +31,9 @@ function getErrorStatus(error: unknown): number {
         case "EMPLOYEE_ALREADY_EXISTS_FOR_USER":
             return 409;
 
+        case "NO_EMPLOYEE_FIELDS_TO_UPDATE":
+            return 400;
+
         default:
             return 500;
     }
@@ -56,7 +59,6 @@ function sendError(
     });
 }
 
-// Use the tenant ID established by the tenant middleware.
 function getTenantId(req: Request): string | undefined {
     return req.tenantId;
 }
@@ -93,6 +95,7 @@ export async function createEmployeeController(
             phone,
             dateOfJoining,
             status,
+            compensation,
         } = req.body;
 
         if (
@@ -128,6 +131,17 @@ export async function createEmployeeController(
             }
         }
 
+        const parsedCompensation =
+            compensation === undefined
+                ? undefined
+                : {
+                    ...compensation,
+                    effectiveFrom:
+                        compensation.effectiveFrom === undefined
+                            ? undefined
+                            : new Date(compensation.effectiveFrom),
+                };
+
         const employee = await createEmployeeService({
             userId,
             tenantId,
@@ -137,6 +151,7 @@ export async function createEmployeeController(
             phone,
             dateOfJoining: parsedDate,
             status,
+            compensation: parsedCompensation,
         });
 
         res.status(201).json({
@@ -242,10 +257,27 @@ export async function updateEmployeeController(
             return;
         }
 
+        const updateData = { ...req.body };
+
+        if (updateData.dateOfJoining !== undefined) {
+            updateData.dateOfJoining = new Date(
+                updateData.dateOfJoining
+            );
+        }
+
+        if (updateData.compensation?.effectiveFrom !== undefined) {
+            updateData.compensation = {
+                ...updateData.compensation,
+                effectiveFrom: new Date(
+                    updateData.compensation.effectiveFrom
+                ),
+            };
+        }
+
         const employee = await updateEmployeeService(
             employeeId,
             tenantId,
-            req.body
+            updateData
         );
 
         res.status(200).json({

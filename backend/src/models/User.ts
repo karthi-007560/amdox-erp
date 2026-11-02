@@ -1,11 +1,12 @@
 
 import mongoose, { Schema, Document, Types } from "mongoose";
+import type { UserRole } from "../types/auth.js";
 
 export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
-    role: "admin" | "manager" | "employee";
+    role: UserRole;
     isActive: boolean;
     tenantId?: Types.ObjectId;
     createdAt: Date;

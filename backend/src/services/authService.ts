@@ -1,24 +1,20 @@
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 import {
     createUser,
     findUserByEmail,
     findUserByEmailWithPassword,
-} from "../repositories/userRepository";
+} from "../repositories/userRepository.js";
 
-interface RegisterInput {
-    name: string;
-    email: string;
-    password: string;
-}
+import type {
+    RegisterInput,
+    LoginInput,
+    LoginResponse,
+} from "../types/auth.js";
 
-interface LoginInput {
-    email: string;
-    password: string;
-}
-
-export async function registerService(input: RegisterInput) {
+export const registerService = async (input: RegisterInput) => {
     const normalizedEmail = input.email.trim().toLowerCase();
 
     const existingUser = await findUserByEmail(normalizedEmail);
@@ -29,14 +25,18 @@ export async function registerService(input: RegisterInput) {
 
     const hashedPassword = await bcrypt.hash(input.password, 12);
 
-    return createUser({
+    const user = await createUser({
         name: input.name,
         email: normalizedEmail,
         password: hashedPassword,
     });
-}
 
-export async function loginService(input: LoginInput) {
+    return user;
+};
+
+export const loginService = async (
+    input: LoginInput
+): Promise<LoginResponse> => {
     const normalizedEmail = input.email.trim().toLowerCase();
 
     const user = await findUserByEmailWithPassword(normalizedEmail);
@@ -64,8 +64,7 @@ export async function loginService(input: LoginInput) {
         throw new Error("JWT_SECRET_MISSING");
     }
 
-    const expiresIn =
-        (process.env.JWT_EXPIRES_IN || "15m") as jwt.SignOptions["expiresIn"];
+    const expiresIn = (process.env.JWT_EXPIRES_IN || "15m") as jwt.SignOptions["expiresIn"];
 
     const token = jwt.sign(
         {
@@ -79,10 +78,10 @@ export async function loginService(input: LoginInput) {
     return {
         token,
         user: {
-            id: user._id,
+            id: user._id.toString(),
             name: user.name,
             email: user.email,
             role: user.role,
         },
     };
-}
+};

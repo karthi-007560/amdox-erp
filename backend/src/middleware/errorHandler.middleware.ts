@@ -1,31 +1,57 @@
-
 import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../utils/errors";
+import { errorResponse } from "../utils/response";
+import { logger } from "../utils/logger";
 
 export function notFoundHandler(
     req: Request,
     res: Response,
     _next: NextFunction
 ): void {
-    res.status(404).json({
-        success: false,
-        message: `Route not found: ${req.method} ${req.originalUrl}`,
-    });
+    errorResponse(
+        res,
+        404,
+        `Route not found: ${req.method} ${req.originalUrl}`,
+        "ROUTE_NOT_FOUND"
+    );
 }
 
 export function errorHandler(
-    error: Error,
+    error: unknown,
     _req: Request,
     res: Response,
-    _next: NextFunction
+    next: NextFunction
 ): void {
-    console.error("Unhandled application error:", error);
-
     if (res.headersSent) {
+        next(error);
         return;
     }
 
-    res.status(500).json({
-        success: false,
-        message: "An unexpected server error occurred.",
+    if (error instanceof AppError) {
+        logger.warn(error.message, {
+            statusCode: error.statusCode,
+            errorCode: error.errorCode,
+        });
+
+        errorResponse(
+            res,
+            error.statusCode,
+            error.message,
+            error.errorCode
+        );
+
+        return;
+    }
+
+    logger.error("Unhandled application error", {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
     });
+
+    errorResponse(
+        res,
+        500,
+        "An unexpected server error occurred.",
+        "INTERNAL_SERVER_ERROR"
+    );
 }
