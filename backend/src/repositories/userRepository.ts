@@ -66,3 +66,39 @@ export async function assignUserToTenant(
         }
     ).select("-password");
 }
+
+
+export async function findUserByIdAndTenant(
+    userId: string,
+    tenantId: string
+) {
+    return User.findOne({
+        _id: userId,
+        tenantId,
+    }).select("-password");
+}
+
+export async function updateUserByIdAndTenant(
+    userId: string,
+    tenantId: string,
+    updates: {
+        name?: string;
+        email?: string;
+        role?: "admin" | "manager" | "employee";
+        isActive?: boolean;
+    }
+) {
+    return User.findOneAndUpdate(
+        {
+            _id: userId,
+            tenantId,
+        },
+        {
+            $set: updates,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).select("-password");
+}

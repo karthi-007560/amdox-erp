@@ -1,4 +1,3 @@
-
 import { Tenant } from "../models/Tenant";
 
 interface CreateTenantInput {
@@ -27,4 +26,18 @@ export async function findTenantByCode(code: string) {
 
 export async function findAllTenants() {
     return Tenant.find().sort({ createdAt: -1 });
+}
+
+export async function updateTenantById(
+    tenantId: string,
+    updates: Record<string, unknown>
+) {
+    return Tenant.findByIdAndUpdate(
+        tenantId,
+        { $set: updates },
+        {
+            new: true,
+            runValidators: true,
+        }
+    ).exec();
 }

@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import {
     getAuthStatus,
@@ -7,18 +6,29 @@ import {
     getCurrentUser,
 } from "../controllers/authController";
 import { authenticateToken } from "../middleware/authMiddleware";
+import { authRateLimiter } from "../middleware/rateLimiter.middleware";
 import {
     validateRegistration,
     validateLogin,
-} from "../validators/authValidator";
+} from "../validators/auth.validator";
 
 const router = Router();
 
 router.get("/status", getAuthStatus);
 
-router.post("/register", validateRegistration, registerUser);
+router.post(
+    "/register",
+    authRateLimiter,
+    validateRegistration,
+    registerUser
+);
 
-router.post("/login", validateLogin, loginUser);
+router.post(
+    "/login",
+    authRateLimiter,
+    validateLogin,
+    loginUser
+);
 
 router.get("/me", authenticateToken, getCurrentUser);
 

@@ -8,22 +8,32 @@ export async function createEmployee(
     return Employee.create(employeeData);
 }
 
-export async function getEmployeeById(employeeId: string) {
-    return Employee.findById(employeeId)
-        .populate("userId", "name email role")
-        .populate("tenantId", "name code");
-}
-
 export async function getEmployeeByUserId(userId: string) {
     return Employee.findOne({ userId })
         .populate("userId", "name email role")
         .populate("tenantId", "name code");
 }
 
+export async function getEmployeeByUserIdAndTenant(
+    userId: string,
+    tenantId: string
+) {
+    return Employee.findOne({
+        userId,
+        tenantId,
+    });
+}
+
 export async function getEmployeesByTenant(tenantId: string) {
     return Employee.find({ tenantId })
         .populate("userId", "name email role")
         .sort({ createdAt: -1 });
+}
+
+export async function getEmployeeById(employeeId: string) {
+    return Employee.findById(employeeId)
+        .populate("userId", "name email role")
+        .populate("tenantId", "name code");
 }
 
 export async function updateEmployeeById(
@@ -42,4 +52,14 @@ export async function updateEmployeeById(
 
 export async function deleteEmployeeById(employeeId: string) {
     return Employee.findByIdAndDelete(employeeId);
+}
+
+export async function getEmployeeByIdAndTenant(
+    employeeId: string,
+    tenantId: string
+) {
+    return Employee.findOne({
+        _id: employeeId,
+        tenantId,
+    });
 }
