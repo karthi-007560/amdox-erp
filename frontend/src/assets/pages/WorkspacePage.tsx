@@ -6,7 +6,6 @@ import {
   FolderKanban,
   FileText,
   Plus,
-  Search,
   X,
   CheckCircle2,
   Trash2,
