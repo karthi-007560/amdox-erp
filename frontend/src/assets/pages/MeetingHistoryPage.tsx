@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Video,
-  CheckCircle2,
   Users,
-  Search,
   CalendarDays,
   Clock3,
   ChevronRight,

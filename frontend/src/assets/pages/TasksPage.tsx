@@ -3,9 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   CheckCircle2,
   Circle,
-  ClipboardList,
   Plus,
-  Search,
   Trash2,
   X,
 } from "lucide-react";

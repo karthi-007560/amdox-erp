@@ -9,10 +9,8 @@ import {
   BarChart3,
   Settings,
   History,
-  Bell,
   Search,
   Menu,
-  X,
 } from "lucide-react";
 
 import "./AppLayout.css";

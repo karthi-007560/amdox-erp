@@ -9,7 +9,6 @@ interface Props {
 
 export default function MeetingHeader({
   title,
-  meetingId,
   onLeave,
 }: Props) {
   const copyLink = async () => {

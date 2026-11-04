@@ -4,7 +4,6 @@ import {
   Bell,
   CalendarDays,
   Check,
-  CheckCheck,
   Clock3,
   MessageSquare,
   Sparkles,
