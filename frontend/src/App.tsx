@@ -1,15 +1,15 @@
 
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import AppLayout from "../src/assets/components/AppLayout";
-import DashboardPage from "../src/assets/pages/DashboardPage";
-import WorkspacePage from "../src/assets/pages/WorkspacePage";
-import AnalyticsPage from "../src/assets/pages/AnalyticsPage";
-import SettingsPage from "../src/assets/pages/SettingsPage";
-import NotificationsPage from "../src/assets/pages/NotificationsPage";
-import MeetingsPage from "../src/assets/pages/MeetingsPage";
-import TasksPage from "../src/assets/pages/TasksPage";
-import MeetingHistoryPage from "../src/assets/pages/MeetingHistoryPage";
+import AppLayout from "./assets/components/AppLayout";
+import DashboardPage from "./assets/pages/DashboardPage";
+import WorkspacePage from "./assets/pages/WorkspacePage";
+import AnalyticsPage from "./assets/pages/AnalyticsPage";
+import SettingsPage from "./assets/pages/SettingsPage";
+import NotificationsPage from "./assets/pages/NotificationsPage";
+import MeetingsPage from "./assets/pages/MeetingsPage";
+import TasksPage from "./assets/pages/TasksPage";
+import MeetingHistoryPage from "./assets/pages/MeetingHistoryPage";
 function App() {
   return (
     <AppLayout>

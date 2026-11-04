@@ -1,36 +1,78 @@
-<<<<<<< HEAD
-# React + TypeScript + Vite
+# Amdox ERP
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Amdox ERP is a multi-tenant Enterprise Resource Planning application designed to manage business operations through integrated modules.
 
-Currently, two official plugins are available:
+## Technology Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Frontend
+- React
+- TypeScript
+- Vite
+- CSS
 
-## React Compiler
+### Backend
+- Node.js
+- Express.js
+- TypeScript
+- MongoDB
+- Mongoose
+- JWT Authentication
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Project Structure
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+amdox-erp/
+├── frontend/
+├── backend/
+└── README.md
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
-=======
-# IntellMeet-AI-Powered-Enterprise-Meeting-Collaboration-Platform
->>>>>>> 3a639e137c74f3bea788298ffc0009ec45a0099a
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd amdox-erp
+```
+
+### 2. Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 3. Backend Setup
+
+Open another terminal:
+
+```bash
+cd backend
+npm install
+```
+
+Configure your backend environment variables using `.env.example`, then run:
+
+```bash
+npm run dev
+```
+
+## Environment Variables
+
+Configure the required environment variables in the backend `.env` file.
+
+Never commit your actual `.env` file.
+
+## Project Modules
+
+- Authentication and Authorization
+- Organisation Management
+- Human Resource Management
+- Finance Management
+- Supply Chain Management
+
+## License
+
+This project is currently under development.
